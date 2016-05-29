@@ -45,9 +45,9 @@ clflush=flush cache line
 cli=clear interrupt flag
 clts=clear task-switched flag in cr0
 cmc=complement carry flag
-cmova=conditional move - above/not below or equal (cf=0 and zf=0)
+cmova=conditional move - above/not below nor equal (cf=0 and zf=0)
 cmovae=conditional move - above or equal/not below/not carry (cf=0)
-cmovb=conditional move - below/not above or equal/carry (cf=1)
+cmovb=conditional move - below/not above nor equal/carry (cf=1)
 cmovbe=conditional move - below or equal/not above (cf=1 or zf=1)
 cmovc=conditional move - carry/below/not above or equal (cf=1)
 cmove=conditional move - equal/zero (zf=1)
@@ -584,11 +584,11 @@ scas=scan string
 scasb=cmp al, ES:[edi++]
 scasq=cmp rax, ES:[rdi+=2]
 scasw=cmp ax, ES:[edi+=2]
-seta=set byte on condition - above/not below or equal (cf=0 and zf=0)
+seta=set byte on condition - above/not below nor equal (cf=0 and zf=0)
 setae=set byte on condition - above or equal/not below/not carry (cf=0)
-setb=set byte on condition - below/not above or equal/carry (cf=1)
+setb=set byte on condition - below/not above nor equal/carry (cf=1)
 setbe=set byte on condition - below or equal/not above (cf=1 or zf=1)
-setc=set byte on condition - carry/below/not above or equal (cf=1)
+setc=set byte on condition - carry/below/not above nor equal (cf=1)
 sete=set byte on condition - equal/zero (zf=1)
 setg=set byte on condition - greater/not less nor equal (zf=0 and sf=of)
 setge=set byte on condition - greater or equal/not less (sf=of)
