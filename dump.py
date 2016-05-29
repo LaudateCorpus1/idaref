@@ -9,11 +9,11 @@ c = conn.cursor()
 def processDescription(description):
     return description
 
-briefdata = {}
+briefdata = []
 with open('r2brief.txt') as f:
     for line in f.readlines():
         m = re.search("([^=]+)=(.+)", line)
-        briefdata[m.group(1)] = m.group(2)
+        briefdata.append({'mnem': m.group(1), 'description': m.group(2)})
 
 data = []
 for (mnem, description) in c.execute("SELECT mnem,description FROM instructions"):
