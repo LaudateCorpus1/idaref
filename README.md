@@ -1,7 +1,7 @@
 IdaRef
 ======
 
-Fork from [idaref](https://github.com/nologic/idaref). This repository contains code to generate `mnemonicdb.json` which is used by [x64dbg](http://x64dbg.com) to show help on mnemonics.
+Fork from [idaref](https://github.com/nologic/idaref). This repository contains code to generate `mnemonicdb.json` which is used by [x64dbg](http://x64dbg.com) to show help on mnemonics. The [x86](https://github.com/mrexodia/radare2/blob/master/libr/asm/d/x86) file with brief descriptions is from radare2.
 
 To use, right click on an instruction in the disassembly view and select 'Help on mnemonic':
 

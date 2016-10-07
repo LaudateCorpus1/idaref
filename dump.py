@@ -10,14 +10,16 @@ def processDescription(description):
     return description
 
 briefdata = []
-with open('r2brief.txt') as f:
+with open('x86') as f:
     for line in f.readlines():
         m = re.search("([^=]+)=(.+)", line)
         briefdata.append({'mnem': m.group(1), 'description': m.group(2)})
+briefdata.sort(key=lambda x: x['mnem'])
 
 data = []
 for (mnem, description) in c.execute("SELECT mnem,description FROM instructions"):
-    data.append({'mnem': mnem, 'description': processDescription(description),})
+    data.append({'mnem': mnem, 'description': processDescription(description)})
+data.sort(key=lambda x: x['mnem'])
 
 result = {}
 result['__license_x86-64'] = 'GPLv2'
