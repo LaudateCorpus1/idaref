@@ -5647,13 +5647,8 @@ Same exceptions as in protected mode.
 |                | an unaligned memory reference is made      
 |                | while the current privilege level is       
 |                | 3.                                         
-| #UD            | If the LOCK prefix is used.                
-');
-INSERT INTO `instructions` VALUES ('x86','CMPSB','-R:CMPS');
-INSERT INTO `instructions` VALUES ('x86','CMPSW','-R:CMPS');
-INSERT INTO `instructions` VALUES ('x86','CMPSD','-R:CMPS');
-INSERT INTO `instructions` VALUES ('x86','CMPSQ','-R:CMPS');
-INSERT INTO `instructions` VALUES ('x86','CMPSD','
+| #UD            | If the LOCK prefix is used.  
+
 CMPSD - Compare Scalar Double-Precision Floating-Point Values:
 | Opcode/Instruction                   | Op/En| 64/32-bit Mode| CPUID Feature Flag| Description                                
 | F2 0F C2 /r ib CMPSD xmm1, xmm2/m64, | RMI  | V/V           | SSE2              | Compare low double-precision floating-point
@@ -5854,9 +5849,12 @@ Denormal.
 
 
 Other Exceptions:
-See Exceptions Type 3.
-
+See Exceptions Type 3.              
 ');
+INSERT INTO `instructions` VALUES ('x86','CMPSB','-R:CMPS');
+INSERT INTO `instructions` VALUES ('x86','CMPSW','-R:CMPS');
+INSERT INTO `instructions` VALUES ('x86','CMPSD','-R:CMPS');
+INSERT INTO `instructions` VALUES ('x86','CMPSQ','-R:CMPS');
 INSERT INTO `instructions` VALUES ('x86','CMPSS','
 CMPSS - Compare Scalar Single-Precision Floating-Point Values:
 | Opcode/Instruction                   | Op/En| 64/32-bit Mode| CPUID Feature Flag| Description                                
@@ -22944,8 +22942,7 @@ Same exceptions as in protected mode.
 |                | 3.                                              
 | #UD            | If attempt is made to load the CS register.     
 |                | If the LOCK prefix is used.                     
-');
-INSERT INTO `instructions` VALUES ('x86','MOV','
+
 MOV - Move to/from Control Registers:
 | Opcode/Instruction                 | Op/En| 64-Bit Mode| Compat/Leg Mode| Description                           
 | 0F 20/r MOV r32, CR0-CR7           | MR   | N.E.       | Valid          | Move control register to r32.         
@@ -23106,8 +23103,7 @@ Compatibility Mode Exceptions:
 |       | is made to access CR1, CR5, CR6, or      
 |       | CR7. If the REX.R prefix is used to      
 |       | specify a register other than CR8.       
-');
-INSERT INTO `instructions` VALUES ('x86','MOV','
+
 MOV - Move to/from Debug Registers:
 | Opcode/Instruction       | Op/En| 64-Bit Mode| Compat/Leg Mode| Description                         
 | 0F 21/r MOV r32, DR0-DR7 | MR   | N.E.       | Valid          | Move debug register to r32.         
@@ -23594,6 +23590,85 @@ Other Exceptions:
 See Exceptions Type 5; additionally
 
 | #UD| If VEX.L = 1. If VEX.vvvv != 1111B.
+
+MOVQ - Move Quadword:
+| Opcode/Instruction                     | Op/En| 64/32-bit Mode| CPUID Feature Flag| Description                           
+| 0F 6F /r MOVQ mm, mm/m64               | RM   | V/V           | MMX               | Move quadword from mm/m64 to mm.      
+| 0F 7F /r MOVQ mm/m64, mm               | MR   | V/V           | MMX               | Move quadword from mm to mm/m64.      
+| F3 0F 7E /r MOVQ xmm1, xmm2/m64        | RM   | V/V           | SSE2              | Move quadword from xmm2/mem64 to xmm1.
+| VEX.128.F3.0F.WIG 7E /r VMOVQ xmm1,    | RM   | V/V           | AVX               | Move quadword from xmm2 to xmm1.      
+| xmm2                                   |      |               |                   |                                       
+| VEX.128.F3.0F.WIG 7E /r VMOVQ xmm1,    | RM   | V/V           | AVX               | Load quadword from m64 to xmm1.       
+| m64                                    |      |               |                   |                                       
+| 66 0F D6 /r MOVQ xmm2/m64, xmm1        | MR   | V/V           | SSE2              | Move quadword from xmm1 to xmm2/mem64.
+| VEX.128.66.0F.WIG D6 /r VMOVQ xmm1/m64,| MR   | V/V           | AVX               | Move quadword from xmm2 register to   
+| xmm2                                   |      |               |                   | xmm1/m64.                             
+
+Instruction Operand Encoding:
+| Op/En| Operand 1    | Operand 2    | Operand 3| Operand 4
+| RM   | ModRM:reg (w)| ModRM:r/m (r)| NA       | NA       
+| MR   | ModRM:r/m (w)| ModRM:reg (r)| NA       | NA       
+
+Description:
+Copies a quadword from the source operand (second operand) to the destination
+operand (first operand). The source and destination operands can be MMX technology
+registers, XMM registers, or 64-bit memory locations. This instruction can be
+used to move a quadword between two MMX technology registers or between an MMX
+technology register and a 64-bit memory location, or to move data between two
+XMM registers or between an XMM register and a 64-bit memory location. The instruction
+cannot be used to transfer data between memory locations.
+
+When the source operand is an XMM register, the low quadword is moved; when
+the destination operand is an XMM register, the quadword is stored to the low
+quadword of the register, and the high quadword is cleared to all 0s.
+
+In 64-bit mode, use of the REX prefix in the form of REX.R permits this instruction
+to access additional registers (XMM8-XMM15). Note: In VEX.128.66.0F D6 instruction
+version, VEX.vvvv and VEX.L=1 are reserved and the former must be 1111b otherwise
+instructions will #UD. Note: In VEX.128.F3.0F 7E version, VEX.vvvv and VEX.L=1
+are reserved and the former must be 1111b, otherwise instructions will #UD.
+
+Operation:
+
+MOVQ instruction when operating on MMX technology registers and memory locations:
+  DEST <- SRC;
+MOVQ instruction when source and destination operands are XMM registers:
+  DEST[63:0] <- SRC[63:0];
+  DEST[127:64] <- 0000000000000000H;
+MOVQ instruction when source operand is XMM register and destination
+operand is memory location:
+  DEST <- SRC[63:0];
+MOVQ instruction when source operand is memory location and destination
+operand is XMM register:
+  DEST[63:0] <- SRC;
+  DEST[127:64] <- 0000000000000000H;
+VMOVQ (VEX.NDS.128.F3.0F 7E) with XMM register source and destination:
+DEST[63:0] <- SRC[63:0]
+DEST[VLMAX-1:64] <- 0
+VMOVQ (VEX.128.66.0F D6) with XMM register source and destination:
+DEST[63:0] <- SRC[63:0]
+DEST[VLMAX-1:64] <- 0
+VMOVQ (7E) with memory source:
+DEST[63:0] <- SRC[63:0]
+DEST[VLMAX-1:64] <- 0
+VMOVQ (D6) with memory dest:
+DEST[63:0] <- SRC2[63:0]
+
+Flags Affected:
+None.
+
+
+Intel C/C++ Compiler Intrinsic Equivalent:
+| MOVQ:| m128i _mm_mov_epi64(__m128i a)
+
+SIMD Floating-Point Exceptions:
+None.
+
+
+Other Exceptions:
+See Table 22-8, “Exception Conditions for Legacy SIMD/MMX Instructions without
+FP Exception,” in the Intel® 64 and IA-32 Architectures Software Developer''s
+Manual, Volume 3B.
 ');
 INSERT INTO `instructions` VALUES ('x86','MOVQ','-R:MOVD');
 INSERT INTO `instructions` VALUES ('x86','MOVDDUP','
@@ -24870,87 +24945,6 @@ FP Exception,” in the Intel® 64 and IA-32 Architectures Software Developer''s
 Manual, Volume 3A.
 
 ');
-INSERT INTO `instructions` VALUES ('x86','MOVQ','
-MOVQ - Move Quadword:
-| Opcode/Instruction                     | Op/En| 64/32-bit Mode| CPUID Feature Flag| Description                           
-| 0F 6F /r MOVQ mm, mm/m64               | RM   | V/V           | MMX               | Move quadword from mm/m64 to mm.      
-| 0F 7F /r MOVQ mm/m64, mm               | MR   | V/V           | MMX               | Move quadword from mm to mm/m64.      
-| F3 0F 7E /r MOVQ xmm1, xmm2/m64        | RM   | V/V           | SSE2              | Move quadword from xmm2/mem64 to xmm1.
-| VEX.128.F3.0F.WIG 7E /r VMOVQ xmm1,    | RM   | V/V           | AVX               | Move quadword from xmm2 to xmm1.      
-| xmm2                                   |      |               |                   |                                       
-| VEX.128.F3.0F.WIG 7E /r VMOVQ xmm1,    | RM   | V/V           | AVX               | Load quadword from m64 to xmm1.       
-| m64                                    |      |               |                   |                                       
-| 66 0F D6 /r MOVQ xmm2/m64, xmm1        | MR   | V/V           | SSE2              | Move quadword from xmm1 to xmm2/mem64.
-| VEX.128.66.0F.WIG D6 /r VMOVQ xmm1/m64,| MR   | V/V           | AVX               | Move quadword from xmm2 register to   
-| xmm2                                   |      |               |                   | xmm1/m64.                             
-
-Instruction Operand Encoding:
-| Op/En| Operand 1    | Operand 2    | Operand 3| Operand 4
-| RM   | ModRM:reg (w)| ModRM:r/m (r)| NA       | NA       
-| MR   | ModRM:r/m (w)| ModRM:reg (r)| NA       | NA       
-
-Description:
-Copies a quadword from the source operand (second operand) to the destination
-operand (first operand). The source and destination operands can be MMX technology
-registers, XMM registers, or 64-bit memory locations. This instruction can be
-used to move a quadword between two MMX technology registers or between an MMX
-technology register and a 64-bit memory location, or to move data between two
-XMM registers or between an XMM register and a 64-bit memory location. The instruction
-cannot be used to transfer data between memory locations.
-
-When the source operand is an XMM register, the low quadword is moved; when
-the destination operand is an XMM register, the quadword is stored to the low
-quadword of the register, and the high quadword is cleared to all 0s.
-
-In 64-bit mode, use of the REX prefix in the form of REX.R permits this instruction
-to access additional registers (XMM8-XMM15). Note: In VEX.128.66.0F D6 instruction
-version, VEX.vvvv and VEX.L=1 are reserved and the former must be 1111b otherwise
-instructions will #UD. Note: In VEX.128.F3.0F 7E version, VEX.vvvv and VEX.L=1
-are reserved and the former must be 1111b, otherwise instructions will #UD.
-
-Operation:
-
-MOVQ instruction when operating on MMX technology registers and memory locations:
-  DEST <- SRC;
-MOVQ instruction when source and destination operands are XMM registers:
-  DEST[63:0] <- SRC[63:0];
-  DEST[127:64] <- 0000000000000000H;
-MOVQ instruction when source operand is XMM register and destination
-operand is memory location:
-  DEST <- SRC[63:0];
-MOVQ instruction when source operand is memory location and destination
-operand is XMM register:
-  DEST[63:0] <- SRC;
-  DEST[127:64] <- 0000000000000000H;
-VMOVQ (VEX.NDS.128.F3.0F 7E) with XMM register source and destination:
-DEST[63:0] <- SRC[63:0]
-DEST[VLMAX-1:64] <- 0
-VMOVQ (VEX.128.66.0F D6) with XMM register source and destination:
-DEST[63:0] <- SRC[63:0]
-DEST[VLMAX-1:64] <- 0
-VMOVQ (7E) with memory source:
-DEST[63:0] <- SRC[63:0]
-DEST[VLMAX-1:64] <- 0
-VMOVQ (D6) with memory dest:
-DEST[63:0] <- SRC2[63:0]
-
-Flags Affected:
-None.
-
-
-Intel C/C++ Compiler Intrinsic Equivalent:
-| MOVQ:| m128i _mm_mov_epi64(__m128i a)
-
-SIMD Floating-Point Exceptions:
-None.
-
-
-Other Exceptions:
-See Table 22-8, “Exception Conditions for Legacy SIMD/MMX Instructions without
-FP Exception,” in the Intel® 64 and IA-32 Architectures Software Developer''s
-Manual, Volume 3B.
-
-');
 INSERT INTO `instructions` VALUES ('x86','MOVQ2DQ','
 MOVQ2DQ - Move Quadword from MMX Technology to XMM Register:
 | Opcode     | Instruction    | Op/En| 64-Bit Mode| Compat/Leg Mode| Description                           
@@ -25221,13 +25215,8 @@ Same exceptions as in protected mode.
 |                | an unaligned memory reference is made      
 |                | while the current privilege level is       
 |                | 3.                                         
-| #UD            | If the LOCK prefix is used.                
-');
-INSERT INTO `instructions` VALUES ('x86','MOVSB','-R:MOVS');
-INSERT INTO `instructions` VALUES ('x86','MOVSW','-R:MOVS');
-INSERT INTO `instructions` VALUES ('x86','MOVSD','-R:MOVS');
-INSERT INTO `instructions` VALUES ('x86','MOVSQ','-R:MOVS');
-INSERT INTO `instructions` VALUES ('x86','MOVSD','
+| #UD            | If the LOCK prefix is used.              
+
 MOVSD - Move Scalar Double-Precision Floating-Point Value:
 | Opcode/Instruction                      | Op/En| 64/32-bit Mode| CPUID Feature Flag| Description                                 
 | F2 0F 10 /r MOVSD xmm1, xmm2/m64        | RM   | V/V           | SSE2              | Move scalar double-precision floating-point 
@@ -25314,8 +25303,12 @@ None.
 Other Exceptions:
 See Exceptions Type 5; additionally
 
-| #UD| If VEX.vvvv != 1111B.
+| #UD| If VEX.vvvv != 1111B.  
 ');
+INSERT INTO `instructions` VALUES ('x86','MOVSB','-R:MOVS');
+INSERT INTO `instructions` VALUES ('x86','MOVSW','-R:MOVS');
+INSERT INTO `instructions` VALUES ('x86','MOVSD','-R:MOVS');
+INSERT INTO `instructions` VALUES ('x86','MOVSQ','-R:MOVS');
 INSERT INTO `instructions` VALUES ('x86','MOVSHDUP','
 MOVSHDUP - Move Packed Single-FP High and Duplicate:
 | Opcode/Instruction                     | Op/En| 64/32-bit Mode| CPUID Feature Flag| Description                                   
