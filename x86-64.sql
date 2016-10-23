@@ -40666,6 +40666,7 @@ Same as 64-bit mode exceptions.
 |                | while the current privilege level is        
 |                | 3.                                          
 ');
+INSERT INTO `instructions` VALUES ('x86','RETF','-R:RET');
 INSERT INTO `instructions` VALUES ('x86','RORX','
 RORX  -  Rotate Right Logical Without Affecting Flags:
 | Opcode/Instruction                  | Op/En| 64/32 -bit Mode| CPUID Feature Flag| Description                         
