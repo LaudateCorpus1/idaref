@@ -19149,6 +19149,7 @@ Compatibility Mode Exceptions:
 | #UD            | If the LOCK prefix is used.                
 ');
 INSERT INTO `instructions` VALUES ('x86','IRETD','-R:IRET');
+INSERT INTO `instructions` VALUES ('x86','IRETQ','-R:IRET');
 INSERT INTO `instructions` VALUES ('x86','Jcc','
 Jcc - Jump if Condition Is Met:
 | Opcode  | Instruction| Op/En| 64-Bit Mode| Compat/Leg Mode| Description                                 
