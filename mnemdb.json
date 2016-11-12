@@ -3695,7 +3695,7 @@
       "mnem": "jb"
     }, 
     {
-      "description": "jump short if below or equal/not above (cf=1 and zf=1)", 
+      "description": "jump short if below or equal/not above (cf=1 or zf=1)", 
       "mnem": "jbe"
     }, 
     {
@@ -3743,7 +3743,7 @@
       "mnem": "jmpf"
     }, 
     {
-      "description": "jump short if not above/equal (cf=1 and zf=1)", 
+      "description": "jump short if not above/equal (cf=1 or zf=1)", 
       "mnem": "jna"
     }, 
     {
