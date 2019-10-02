@@ -38787,6 +38787,7 @@ Same exceptions as in protected mode.
 | #UD            | If the LOCK prefix is used.                
 ');
 INSERT INTO `instructions` VALUES ('x86','PUSHFD','-R:PUSHF');
+INSERT INTO `instructions` VALUES ('x86','PUSHFQ','-R:PUSHF');
 INSERT INTO `instructions` VALUES ('x86','PXOR','
 PXOR - Logical Exclusive OR:
 | Opcode*/Instruction                    | Op/En| 64/32 bit Mode Support| CPUID Feature Flag| Description                       
